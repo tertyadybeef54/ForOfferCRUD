@@ -1,0 +1,88 @@
+﻿@model IEnumerable<ForOffer.Models.DB.MfGeneralNotesOffer>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Notas generales para ofertas</h1>
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        @TempData["Mensaje"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<p>
+    <a asp-action="Crear">Crear nueva</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.GeneralNotesOfferId)
+
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GeneralNotesServicesId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GeneralNotesText)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RegState)
+            </th>
+            <th>Operaciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GeneralNotesOfferId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GeneralNotesServices.ServicesPlaces)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GeneralNotesText)
+                </td>
+                @if (item.RegState == 1)
+                {
+                    <td>activo</td>
+                }
+                else
+                {
+                    <td>no activo</td>
+                }
+                    <td>
+                        <a asp-action="Editar" asp-route-id="@item.GeneralNotesOfferId">Editar</a> |
+                        <a onclick="jsDelete(@item.GeneralNotesOfferId)" asp-route-id="@item.GeneralNotesOfferId">Eliminar</a>
+                    </td>
+                </tr>
+            }
+    </tbody>
+</table>
+
+
+@section Scripts {
+<script>
+    function jsDelete(id) {
+        if (confirm("¿Está seguro de eliminarlo?")) {
+            url = "@Url.Content("~/Notas/Eliminar")" + "/" + id;
+            console.log(id);
+            $.post(url, function (data) {
+                if (data == "1") {
+                    document.location.href = "@Url.Content("~/Notas/Index")";
+                } else {
+                    alert("ocurrió un error :c");
+                }
+            })
+        }
+    }
+</script>
+}

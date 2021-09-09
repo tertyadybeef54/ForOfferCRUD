@@ -1,0 +1,47 @@
+﻿@model ForOffer.Models.DB.ViewModel.ObservationViewModel
+
+@{
+    var places = (List<SelectListItem>)ViewData["Services"];
+}
+
+<!-- The Modal -->
+<div class="modal fade" id="editar">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- aqui va el form -->
+            
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Inserte los datos</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body" onload="load();">
+                    <form asp-controller="Observaciones" asp-action="ModalEditar" method="post">
+                        <input type="hidden" asp-for="GeneralObservationOfferId" />
+                        <input type="hidden" asp-for="RegState" />
+                        <div class="form-group">
+                            <label asp-for="GeneralObservationText" class="control-label"></label>
+                            <textarea asp-for="GeneralObservationText" class="form-control" rows="6"></textarea>                            
+                            <span asp-validation-for="GeneralObservationText" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="GeneralObservationServicesId" class="control-label"></label>
+                            <select asp-for="GeneralObservationServicesId" class="form-control" asp-items="places" id="lugar">
+                                <option value="">Selecione uno</option>
+                            </select>
+                            <span asp-validation-for="GeneralObservationServicesId" class="text-danger"></span>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" data-save="modal">Actualizar</button>
+                </div>
+            
+        </div>
+    </div>
+</div>

@@ -1,0 +1,42 @@
+﻿@model ForOffer.Models.DB.MfGeneralNotesOffer
+@{
+    ViewData["Title"] = "Editar nota";
+}
+
+<h1>Editar</h1>
+
+<h4>Nota general para ofertas</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        @Html.AntiForgeryToken()
+        <form asp-action="Editar" method="post">
+            @*@Html.HiddenFor(d => d.GeneralNotesOfferId)*@
+            <input type="hidden" asp-for="GeneralNotesOfferId" />
+            <div class="form-group">
+                <label asp-for="GeneralNotesText" class="control-label"></label>
+                <textarea asp-for="GeneralNotesText" class="form-control" rows="6"></textarea>
+                <span asp-validation-for="GeneralNotesText" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GeneralNotesServicesId" class="control-label"></label>
+                <select asp-for="GeneralNotesServicesId" class="form-control" asp-items="ViewBag.places">
+                    <option value="">Selecione uno</option>
+                </select>
+                <span asp-validation-for="GeneralNotesServicesId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RegState" class="control-label"></label>
+                <input asp-for="RegState" class="form-control" />
+                <span asp-validation-for="RegState" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Editar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

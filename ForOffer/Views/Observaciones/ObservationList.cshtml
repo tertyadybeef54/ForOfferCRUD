@@ -1,0 +1,43 @@
+﻿
+@{
+    ViewData["Title"] = "Lista de Observaciones generales";
+}
+
+
+
+@model ForOffer.Models.DB.ViewModel.ObservationViewModel;
+
+
+
+
+
+<div class="row">
+    <table>
+        <thead>
+            <tr>
+                <th>Observaciones</th>
+                <th>Lugar</th>
+            </tr>
+
+        </thead>
+        <tbody>
+            @{ 
+            foreach (var element in Model.Lista) {
+            <tr>
+                <td>
+                    @element.GeneralObservationText
+                </td>
+                <td>
+                    @element.ServicesPlace
+                </td>
+            </tr>
+            }
+            }
+        </tbody>
+    </table>
+</div>
+
+
+
+
+

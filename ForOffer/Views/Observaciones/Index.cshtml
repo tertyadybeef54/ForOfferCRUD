@@ -1,0 +1,279 @@
+﻿@model IEnumerable<ForOffer.Models.DB.MfGeneralObservationsOffer>
+
+@{
+    ViewData["Title"] = "Index";
+    List<SelectListItem> estados = (List<SelectListItem>)ViewBag.estados;
+    var cont = 0;
+
+
+}
+
+<h1>Observaciones generales para ofertas</h1>
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        @TempData["Mensaje"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<div id="PlaceHolderHere"></div>
+
+<p>
+    <a class="btn btn-outline-primary" asp-action="Crear">Crear nueva</a>
+    <button asp-action="Crear" type="button" class="btn btn-primary" data-toggle="modal" data-target="#nuevo">(modal)Crear</button>
+</p>
+
+<!-- The Modal -->
+@await Html.PartialAsync("_ParcialCrear", (ForOffer.Controllers.NuevaObservacion)ViewBag.Nueva)
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr class="table-primary">
+            <th>
+                @Html.DisplayNameFor(model => model.GeneralObservationOfferId)
+
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GeneralObservationServicesId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GeneralObservationText)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RegState)
+            </th>
+            <th>Operaciones</th>
+        </tr>
+    </thead>
+    <tbody>
+
+
+
+        @foreach (var item in Model)
+        {
+            cont += 1;
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GeneralObservationOfferId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GeneralObservationServices.ServicesPlaces)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GeneralObservationText)
+                </td>
+                @if (item.RegState == 1)
+                {
+                    <td>activo</td>
+                }
+                @if (item.RegState == 2)
+                {
+                    <td>inactivo</td>
+                }
+                @if (item.RegState == 3)
+                {
+                    <td>otro</td>
+                }
+                <td>
+                    <a class="btn btn-success" asp-action="Editar" asp-route-id="@item.GeneralObservationOfferId">Editar</a>
+
+                    <button type="button" class="btn btn-warning" data-toggle="ajax-modal" data-target="#editar"
+                            data-url="@Url.Action($"ModalEditar/{item.GeneralObservationOfferId}")">(modal)Editar</button>
+
+                    <a class="btn btn-danger text-white" onclick="jsDelete(@item.GeneralObservationOfferId)">Eliminar</a>
+                    <a class="btn btn-primary text-white" onclick="stateChange(@item.GeneralObservationOfferId)">Cambiar estado</a>
+                    @{
+                        if (item.RegState == 1)
+                        {
+                            estados[0].Selected = true;
+                            estados[1].Selected = false;
+                            estados[2].Selected = false;
+                        }
+                        if (item.RegState == 2)
+                        {
+                            estados[0].Selected = false;
+                            estados[1].Selected = true;
+                            estados[2].Selected = false;
+                        }
+                        if (item.RegState == 0 || item.RegState == 3)
+                        {
+                            estados[0].Selected = false;
+                            estados[1].Selected = false;
+                            estados[2].Selected = true;
+                        }
+                    }
+                    @{
+                        var idState = String.Concat("mySelect", cont.ToString());
+                    }
+                    <select id=@idState onchange="estado( @item.GeneralObservationOfferId, @cont )" asp-items="ViewBag.estados"></select>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@await Html.PartialAsync("_ParcialEditar", (ForOffer.Models.DB.ViewModel.ObservationViewModel)ViewData["ModelEdit"])
+
+
+@section Scripts {
+
+
+
+    <script>
+
+        $(function () {
+            var PlaceHolderElement = $("#PlaceHolderHere");
+        })
+
+
+        //function load() {
+        //    var el = document.getElementById("texto");
+        //    el.addEventListener("click", function () { modifyText("four") }, false);
+        //}
+
+
+        /*Ediatar a travez de un modal*/
+        @*function jsEdit(id) {
+            console.log(id);
+            url = "@Url.Content("~/Observaciones/ModalEditar")" + "/?id=" + id;
+            $.get(url, function (data) {
+                if (data=="1") {
+                    console.log("todo ok!");
+                    //document.editar3.text.value = "algo";
+                } else {
+                    console.log("algo falló"+ data)
+                }
+            })
+        }*@
+
+
+        /*cambiar estado cuando son mas de dos estados*/
+            function estado(id, idSelect) {
+            let id2 = "#mySelect" + idSelect;
+            console.log(id2);
+            let $select = document.querySelector(id2);
+            let indice = $select.selectedIndex;
+            if (indice === -1) return; // Esto es cuando no hay elementos
+            const opcionSeleccionada = $select.options[indice].value;
+            console.log(id+ " - " +opcionSeleccionada);
+            url = "@Url.Content("~/Observaciones/SelectState")" + "/?id=" + id + "&estado=" + opcionSeleccionada;
+            $.post(url, function (data) {
+                if (data == "1") {
+                    setTimeout(function () {
+                        url2 = "@Url.Content("~/Observaciones/Index/")";
+                        document.location.href = url2;
+                    }, 500);
+                } else {
+                    swal({
+                        title: "¡Oops... Algo salio mal!",
+                        text: data,
+                        icon: "error",
+                        button: "Entendido",
+                    });
+                }
+            })
+        }
+
+        /*cambiar estado cuando son dos estados*/
+        function stateChange(id) {
+            swal({
+              title: "¿Es seguro que deseas cambiar el estado?",
+                text: "",
+              icon: "warning",
+              buttons: true,
+              dangerMode: true,
+            })
+            .then((willDelete) => {
+              if (willDelete) {
+
+                url = "@Url.Content("~/Observaciones/Estado")" + "/?id="+id;
+                $.post(url, function (data) {
+
+                    if (data == "1") {
+
+                        swal({
+                                  title: "¡Todo fue un Éxito!",
+                                  text: '',
+                                  icon: "success",
+                                  button: "Entendido",
+                             });
+                        setTimeout(function () {
+                            url2 = "@Url.Content("~/Observaciones/Index/")";
+                            document.location.href=url2;
+                        }, 1000);
+
+
+                    } else {
+                        swal({
+                                  title: "¡Oops... Algo salio mal!",
+                                  text: data,
+                                  icon: "error",
+                                  button: "Entendido",
+                             });
+
+                    }
+
+                });
+
+              } else {
+                  swal("No se ha cambiado el estado.");
+              }
+            });
+        }
+
+
+        function jsDelete(id) {
+
+            swal({
+              title: "¿Es seguro que deseas desvincular esta hoja de datos de la factibilidad?",
+                text: "Estas hojas de datos quedaran registradas..",
+              icon: "warning",
+              buttons: true,
+              dangerMode: true,
+            })
+            .then((willDelete) => {
+              if (willDelete) {
+
+                url = "@Url.Content("~/Observaciones/Eliminar")" + "/?id="+id;
+                $.post(url, function (data) {
+
+                    if (data == "1") {
+
+                        swal({
+                                  title: "¡Todo fue un Éxito!",
+                                  text: 'La hoja de datos fue desvinculada satisfactoriamente',
+                                  icon: "success",
+                                  button: "Entendido",
+                             });
+                        setTimeout(function () {
+                            url2 = "@Url.Content("~/Observaciones/Index/")";
+                            document.location.href=url2;
+                        }, 1000);
+
+
+                    } else {
+                        swal({
+                                  title: "¡Oops... Algo salio mal!",
+                                  text: data,
+                                  icon: "error",
+                                  button: "Entendido",
+                             });
+
+                    }
+
+                });
+
+              } else {
+                  swal("No pasa nada.La hoja de datos sigue asignada.");
+              }
+            });
+        }
+
+    </script>
+
+
+}
